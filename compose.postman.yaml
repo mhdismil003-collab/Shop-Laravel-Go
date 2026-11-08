@@ -1,0 +1,5 @@
+# Local interview/demo only. Keep warehouse private in the base stack.
+services:
+  warehouse:
+    ports:
+      - "127.0.0.1:${POSTMAN_GRPC_PORT:-50051}:50051"

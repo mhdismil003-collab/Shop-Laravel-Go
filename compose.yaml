@@ -1,0 +1,126 @@
+name: shop-laravel
+
+x-shop-app: &shop-app
+  image: shop-laravel-api:local
+  environment:
+    APP_NAME: Shop
+    APP_ENV: production
+    APP_DEBUG: "false"
+    APP_KEY: ${APP_KEY:-}
+    APP_URL: http://localhost:${API_PORT:-8080}
+    DB_HOST: postgres
+    DB_PORT: 5432
+    DB_DATABASE: ${POSTGRES_DB:-shop_laravel}
+    DB_USERNAME: ${POSTGRES_USER:-shop}
+    DB_PASSWORD: ${POSTGRES_PASSWORD:-shop}
+    JWT_SIGNING_KEY: ${JWT_SIGNING_KEY:-}
+    ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@shop.local}
+    ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+    LOGIN_RATE_LIMIT_PERMIT_LIMIT: ${LOGIN_RATE_LIMIT_PERMIT_LIMIT:-5}
+    FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-http://localhost:5173}
+    WAREHOUSE_ADDRESS: warehouse:50051
+    WAREHOUSE_ADMIN_ADDRESS: warehouse:50052
+    WAREHOUSE_TIMEOUT_MS: 2000
+    LOG_CHANNEL: stderr
+  networks: [shop-data, inventory-rpc]
+
+services:
+  api:
+    <<: *shop-app
+    build:
+      context: laravel
+    ports:
+      - "127.0.0.1:${API_PORT:-8080}:80"
+    volumes:
+      - images:/var/www/html/storage/app/public
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit(@file_get_contents('http://127.0.0.1/health') === false ? 1 : 0);"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+
+  inventory-recovery:
+    <<: *shop-app
+    pull_policy: never
+    command: ["php", "artisan", "inventory:recover", "--watch"]
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:18
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-shop_laravel}
+      POSTGRES_USER: ${POSTGRES_USER:-shop}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-shop}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5433}:5432"
+    networks: [shop-data]
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 30s
+      start_interval: 1s
+
+  warehouse:
+    build:
+      context: warehouse
+    environment:
+      PGHOST: warehouse-db
+      PGPORT: 5432
+      PGUSER: warehouse
+      PGPASSWORD: ${WAREHOUSE_POSTGRES_PASSWORD:-warehouse}
+      PGDATABASE: warehouse
+      PGSSLMODE: disable
+      GRPC_LISTEN: ":50051"
+      GRPC_ADMIN_LISTEN: ":50052"
+    networks: [inventory-rpc, warehouse-data]
+    expose:
+      - "50051"
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/warehouse", "healthcheck"]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+      start_period: 30s
+    depends_on:
+      warehouse-db:
+        condition: service_healthy
+
+  warehouse-db:
+    image: postgres:18
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: warehouse
+      POSTGRES_USER: warehouse
+      POSTGRES_PASSWORD: ${WAREHOUSE_POSTGRES_PASSWORD:-warehouse}
+    networks: [warehouse-data]
+    volumes:
+      - warehouse-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 30s
+      start_interval: 1s
+
+volumes:
+  postgres-data:
+  images:
+  warehouse-data:
+
+networks:
+  shop-data:
+  inventory-rpc:
+  warehouse-data:
+    internal: true

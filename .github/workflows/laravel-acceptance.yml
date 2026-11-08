@@ -1,0 +1,35 @@
+name: Laravel and Go acceptance
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start the test stack
+        run: |
+          export APP_KEY="base64:$(openssl rand -base64 32)"
+          export JWT_SIGNING_KEY="$(openssl rand -base64 32)"
+          export ADMIN_PASSWORD='CiDemoAdmin123!'
+          export LOGIN_RATE_LIMIT_PERMIT_LIMIT=25
+          docker compose config --quiet
+          docker compose build api warehouse
+          docker compose up -d --wait --wait-timeout 120
+      - name: Test permissions, concurrency and recovery
+        env:
+          ADMIN_PASSWORD: CiDemoAdmin123!
+          SHOP_TEST_LOGIN_PROTECTION: "1"
+        run: python3 tests/laravel_acceptance.py
+      - name: Logs
+        if: failure()
+        run: docker compose logs --tail 100
+      - name: Stop the disposable stack
+        if: always()
+        run: docker compose down -v

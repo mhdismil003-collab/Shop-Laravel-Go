@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#123b35">
+  <title>رِف | متجر Shop</title>
+  <link rel="stylesheet" href="/shop.css?v=20261105-cart">
+  <script src="/shop.js?v=20261105-cart" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">انتقل إلى المحتوى</a>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a href="/" class="brand" aria-label="رِف، الصفحة الرئيسية">
+        <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 9 12 4l8 5v9l-8 4-8-4V9Z M4 9l8 5 8-5 M12 14v8 M8 6.5l8 5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span>
+        <span><strong>رِف</strong><small lang="en">SHOP</small></span>
+      </a>
+      <nav aria-label="التنقل الرئيسي">
+        <a href="#catalog-section">المنتجات</a>
+        <a id="orders-nav" href="#order-tools" hidden>الطلبات</a>
+        <a id="cart-nav" href="#customer-tools" hidden>السلة <span id="cart-count" class="nav-count">0</span></a>
+        <a id="account-nav" class="nav-account" href="#account-section">الحساب</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="wrap">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow"><span></span> متجر رِف</p>
+        <h1 id="hero-title">اختياراتك على الرِّف</h1>
+        <p>تصفّح المنتجات، تحقّق من توفرها، وتابع حالة طلبك من حسابك.</p>
+        <a class="button primary hero-link" href="#catalog-section">تصفّح المنتجات <span aria-hidden="true">←</span></a>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <svg viewBox="0 0 400 276" fill="none">
+          <defs><linearGradient id="box-face" x1="128" y1="96" x2="324" y2="239" gradientUnits="userSpaceOnUse"><stop stop-color="#A9E2C6"/><stop offset="1" stop-color="#529681"/></linearGradient><pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0v24" stroke="#a5d4ba" stroke-opacity=".18"/></pattern></defs>
+          <rect x="32" y="12" width="322" height="252" rx="27" fill="url(#grid)"/>
+          <circle cx="207" cy="140" r="110" stroke="#9bd2bc" stroke-opacity=".25"/>
+          <circle cx="207" cy="140" r="89" stroke="#9bd2bc" stroke-opacity=".2"/>
+          <path d="m80 210 117 45 134-55-117-38-134 48Z" fill="#082822" opacity=".55"/>
+          <path d="m100 111 108-48 111 48-111 53-108-53Z" fill="#DDF1D9"/>
+          <path d="M100 111v87l108 46v-80l-108-53Z" fill="url(#box-face)"/>
+          <path d="M319 111v84l-111 49v-80l111-53Z" fill="#5FAD91"/>
+          <path d="m143 92 109 50 26-13-109-49-26 12Z" fill="#EBC37D"/>
+          <path d="M252 142v33l26-13v-33l-26 13Z" fill="#EBC37D"/>
+          <path d="m117 178 40 18m-40-8 28 13" stroke="#176253" stroke-width="3" stroke-linecap="round"/>
+          <path d="m240 207 29-13" stroke="#246D5C" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="310" cy="58" r="26" fill="#EBC37D"/><path d="m299 58 7 7 14-15" stroke="#173F35" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M80 63v22M69 74h22M345 147v16m-8-8h16" stroke="#E1F0D3" stroke-opacity=".8" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </section>
+
+    <div id="feedback-box" class="feedback" hidden>
+      <div id="feedback" role="status" aria-live="polite"></div>
+      <small id="feedback-ref" hidden></small>
+    </div>
+
+    <section id="account-section" class="panel account-panel" aria-labelledby="account-title">
+      <div class="section-head"><div><span class="kicker">حسابي</span><h2 id="account-title">الدخول إلى المتجر</h2></div></div>
+      <form id="account" class="form-grid account-form" novalidate>
+        <label>البريد الإلكتروني <input name="email" type="email" dir="ltr" autocomplete="username" maxlength="254" required><small data-field-error="email" hidden></small></label>
+        <label>كلمة المرور <input name="password" type="password" dir="ltr" autocomplete="current-password" required><small data-field-error="password" hidden></small></label>
+        <div class="form-actions"><button class="primary" name="action" value="login">تسجيل الدخول</button><button name="action" value="register">إنشاء حساب</button></div>
+      </form>
+      <div id="session" class="session" hidden>
+        <div><strong id="role-label"></strong><p id="identity" dir="auto"></p></div>
+        <button id="logout">تسجيل الخروج</button>
+      </div>
+    </section>
+
+    <section id="catalog-section" class="panel" aria-labelledby="catalog-title">
+      <div class="section-head">
+        <div><span class="kicker">الكتالوج</span><h2 id="catalog-title">المنتجات</h2><p id="catalog-count" class="muted"></p></div>
+        <label class="filter">التصنيف <select id="category"><option value="">جميع التصنيفات</option></select></label>
+      </div>
+      <div id="catalog" class="cards" aria-live="polite"></div>
+      <div class="pager"><button id="previous" disabled>السابق</button><span id="page"></span><button id="next" disabled>التالي</button></div>
+      <div id="product" class="detail" tabindex="-1" hidden></div>
+    </section>
+
+    <div id="customer-tools" class="workspace" hidden>
+      <section class="panel" aria-labelledby="cart-title">
+        <div class="section-head"><div><span class="kicker">المشتريات</span><h2 id="cart-title">السلة</h2></div><button id="clear-cart" disabled>إفراغ السلة</button></div>
+        <p class="muted">عدّل الكميات أو احذف المنتجات قبل الإرسال. يُحجز المخزون عند إنشاء الطلب، ويُعاد عند إلغائه من المسؤول.</p>
+        <ul id="cart" class="list"></ul>
+        <div class="cart-footer"><strong id="cart-total"></strong><button class="primary" id="checkout">إنشاء الطلب</button></div>
+      </section>
+      <section class="panel" aria-labelledby="notifications-title">
+        <div class="section-head"><div><span class="kicker">متابعة الطلب</span><h2 id="notifications-title">إشعارات طلباتي</h2></div><button id="refresh-notifications">تحديث الإشعارات</button></div>
+        <p id="notification-status" class="muted"></p>
+        <ul id="notifications" class="list" aria-live="polite"></ul>
+      </section>
+    </div>
+
+    <section id="admin-tools" class="panel" hidden aria-labelledby="create-title">
+      <div class="section-head"><div><span class="kicker">إدارة الكتالوج</span><h2 id="create-title">إضافة منتج</h2></div></div>
+      <form id="new-product" class="form-grid product-form" novalidate>
+        <label>الاسم <input name="name" required maxlength="160"><small data-field-error="name" hidden></small></label>
+        <label>السعر <input name="price" dir="ltr" type="number" min="0.01" max="999999999.99" step="0.01" required><small data-field-error="price" hidden></small></label>
+        <label>التصنيف <select name="categoryId" required><option value="">اختر تصنيفًا</option></select><small data-field-error="categoryId" hidden></small></label>
+        <label>الكمية الابتدائية <input name="initialQuantity" dir="ltr" type="number" min="0" max="2147483647" step="1" value="0" required><small data-field-error="initialQuantity" hidden></small></label>
+        <label class="wide">الوصف <textarea name="description" rows="3" required maxlength="4000"></textarea><small data-field-error="description" hidden></small></label>
+        <label class="wide">الصورة <input name="image" type="file" accept="image/jpeg,image/png,image/webp" required><small class="muted">JPG أو PNG أو WebP حتى 2 ميغابايت</small><small data-field-error="image" hidden></small></label>
+        <button class="primary">إضافة المنتج</button>
+      </form>
+      <p class="muted">يُحفظ الرصيد في المستودع. لزيادة رصيد منتج موجود، افتح تفاصيله من الكتالوج.</p>
+    </section>
+
+    <section id="order-tools" class="panel" hidden aria-labelledby="orders-title">
+      <div class="section-head"><div><span class="kicker">سجل الطلبات</span><h2 id="orders-title">الطلبات</h2></div><button id="refresh-orders">تحديث الطلبات</button></div>
+      <ul id="orders" class="list"></ul>
+      <div class="pager"><button id="newer-orders" disabled>الصفحة السابقة</button><span id="order-page"></span><button id="older-orders" disabled>الصفحة التالية</button></div>
+      <div id="order" class="detail" tabindex="-1" hidden></div>
+    </section>
+  </main>
+  <footer class="wrap footer"><span>رِف · Shop</span><a href="/docs">توثيق الواجهات</a></footer>
+</body>
+</html>

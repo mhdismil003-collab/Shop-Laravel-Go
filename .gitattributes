@@ -1,0 +1,11 @@
+# Store text files with LF line endings and check them out in each OS's native style
+* text=auto
+
+# Shell scripts run inside Linux containers, where CRLF line endings break them
+*.sh text eol=lf
+
+# Written by buf generate; GitHub collapses these in pull request diffs
+warehouse/gen/** linguist-generated=true
+
+# Generated from the shared inventory contract
+laravel/generated/** linguist-generated=true whitespace=-blank-at-eof

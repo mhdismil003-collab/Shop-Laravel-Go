@@ -1,0 +1,16 @@
+{
+  "name": "shop-api-proof",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "generate": "node scripts/generate.mjs",
+    "proof": "node scripts/run.mjs",
+    "test": "node --test test/*.test.mjs"
+  },
+  "devDependencies": {
+    "newman": "6.2.3",
+    "openapi-to-postmanv2": "6.4.2"
+  }
+}

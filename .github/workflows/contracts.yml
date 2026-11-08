@@ -1,0 +1,69 @@
+# Guards the contract the app and the warehouse share: buf lint, buf breaking against main,
+# and that the committed Go code in warehouse/gen matches the proto
+name: Contracts
+
+on:
+  pull_request:
+    paths:
+      - contracts/**
+      - warehouse/buf.gen.yaml
+      - warehouse/gen/**
+      - warehouse/go.mod
+      - warehouse/go.sum
+      - .github/workflows/contracts.yml
+  push:
+    branches: [main]
+    paths:
+      - contracts/**
+      - warehouse/buf.gen.yaml
+      - warehouse/gen/**
+      - warehouse/go.mod
+      - warehouse/go.sum
+      - .github/workflows/contracts.yml
+
+permissions:
+  contents: read
+
+jobs:
+  buf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # buf breaking reads the base commit from the local history
+          fetch-depth: 0
+
+      - uses: bufbuild/buf-action@v1
+        with:
+          version: 1.75.0
+          setup_only: true
+
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: warehouse/go.mod
+          cache-dependency-path: warehouse/go.sum
+
+      - name: Lint
+        run: buf lint contracts
+
+      - name: Check for breaking changes against main
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          if ! git cat-file -e "$BASE_SHA:contracts/buf.yaml" 2>/dev/null; then
+            echo "::notice::The base branch has no contract yet, so there is nothing to compare against."
+            exit 0
+          fi
+          buf breaking contracts --against ".git#ref=$BASE_SHA,subdir=contracts"
+
+      - name: Check the generated Go code is up to date
+        working-directory: warehouse
+        run: |
+          buf generate
+          if [ -n "$(git status --porcelain -- gen)" ]; then
+            git status --short -- gen
+            echo "::error::warehouse/gen doesn't match the proto. Run 'buf generate' in warehouse/ and commit the result."
+            exit 1
+          fi
+          go build ./...

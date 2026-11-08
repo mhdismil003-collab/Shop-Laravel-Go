@@ -1,0 +1,21 @@
+Shop - Laravel + Go - Interview package
+
+WINDOWS QUICK START
+1. Start Docker Desktop. Python 3.10+ and Postman Desktop are required.
+2. Open PowerShell in the folder containing compose.yaml.
+3. If you have an existing installation, keep its root .env and Docker volumes.
+4. Run:
+   powershell -ExecutionPolicy Bypass -File .\Start-Shop.ps1
+5. Import the two *ready.postman_collection.json files from the generated Postman-Ready folder.
+   They work with No environment. Do not change the generated demo credentials.
+6. Run the 20-customer race:
+   powershell -ExecutionPolicy Bypass -File .\Test-Race.ps1
+7. Stop all services without deleting data:
+   powershell -ExecutionPolicy Bypass -File .\Stop-Shop.ps1
+
+Arabic guide: docs/INTERVIEW_GUIDE_AR.md
+Printable guide: docs/Interview-Guide-AR.pdf
+Other three Arabic PDFs remain included under docs/.
+
+Postman-Ready and .demo are generated for your own running database.
+They contain local credentials and are intentionally excluded from the distributable ZIP.

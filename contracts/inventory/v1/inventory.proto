@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package inventory.v1;
+
+// The only way into stock. order_id makes Reserve and Release safe to repeat.
+service InventoryService {
+  // How many units of one product are available.
+  rpc GetStock(GetStockRequest) returns (GetStockResponse);
+  // Reserves every line of one order, or none of them.
+  rpc Reserve(ReserveRequest) returns (ReserveResponse);
+  // Gives back what an order reserved. Safe to call twice.
+  rpc Release(ReleaseRequest) returns (ReleaseResponse);
+}
+
+message GetStockRequest {
+  string product_id = 1; // UUID
+}
+
+message GetStockResponse {
+  int32 available = 1;
+}
+
+message ReserveItem {
+  string product_id = 1; // UUID
+  int32 quantity = 2; // greater than 0
+}
+
+message ReserveRequest {
+  string order_id = 1; // UUID, created by the app before the call
+  repeated ReserveItem items = 2;
+}
+
+message Shortage {
+  string product_id = 1;
+  int32 requested = 2;
+  int32 available = 3;
+}
+
+message ReserveResponse {
+  bool reserved = 1;
+  repeated Shortage shortages = 2; // the short products, when reserved is false
+}
+
+message ReleaseRequest {
+  string order_id = 1;
+}
+
+message ReleaseResponse {}

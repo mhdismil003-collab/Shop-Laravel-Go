@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package inventory.v1;
+
+// Served on the private administration listener, separate from the demo port.
+service InventoryAdminService {
+  rpc AddStock(AddStockRequest) returns (AddStockResponse);
+}
+
+message AddStockRequest {
+  string product_id = 1; // UUID
+  int32 quantity = 2; // greater than 0
+  string operation_id = 3; // UUID; reuse on retry
+}
+
+message AddStockResponse {}

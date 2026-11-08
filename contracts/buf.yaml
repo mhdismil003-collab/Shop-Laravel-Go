@@ -1,0 +1,10 @@
+# The one contract the app and the warehouse share; this folder is the module root.
+# CI runs `buf lint contracts` and `buf breaking` against main (.github/workflows/contracts.yml).
+version: v2
+lint:
+  use:
+    - STANDARD
+breaking:
+  # FILE also catches moves and renames that break generated code, not only the wire format
+  use:
+    - FILE

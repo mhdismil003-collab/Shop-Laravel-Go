@@ -1,0 +1,122 @@
+# Generated from tests/postman/openapi.v1.json. Run npm run generate to refresh.
+# Examples only: review bodies before sending. For executable assertions use npm run proof.
+@baseUrl = http://localhost:8080
+@bearerToken = REPLACE_LOCALLY
+
+### Create a customer account
+POST {{baseUrl}}/api/v1/auth/register
+Authorization: Bearer {{bearerToken}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "<string>",
+  "password": "<string>"
+}
+
+### Sign in with email and password to receive a JWT
+POST {{baseUrl}}/api/v1/auth/login
+Authorization: Bearer {{bearerToken}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "<null,string>",
+  "password": "<null,string>"
+}
+
+### Get the authenticated user's profile and roles
+GET {{baseUrl}}/api/v1/users/me
+Authorization: Bearer {{bearerToken}}
+Accept: application/json
+
+### List products by category with paging (pageSize 1–50, default 20)
+GET {{baseUrl}}/api/v1/products?category=<uuid>&page=1&pageSize=20
+Authorization: Bearer {{bearerToken}}
+Accept: application/json
+
+### Create a product with a JPEG, PNG or WebP image up to 2 MB
+POST {{baseUrl}}/api/v1/products
+Authorization: Bearer {{bearerToken}}
+Content-Type: multipart/form-data
+Accept: application/json
+Content-Type: multipart/form-data; boundary=ShopBoundary
+
+--ShopBoundary
+Content-Disposition: form-data; name="name"
+
+<string>
+--ShopBoundary
+Content-Disposition: form-data; name="description"
+
+<string>
+--ShopBoundary
+Content-Disposition: form-data; name="price"
+
+<null,number,string-double>
+--ShopBoundary
+Content-Disposition: form-data; name="categoryId"
+
+<null,string-uuid>
+--ShopBoundary
+Content-Disposition: form-data; name="image"; filename="product.png"
+Content-Type: image/png
+
+< ../postman/fixtures/product.png
+--ShopBoundary--
+
+### Get a product and its live warehouse availability over gRPC
+GET {{baseUrl}}/api/v1/products/{{id}}
+Authorization: Bearer {{bearerToken}}
+Accept: application/json
+
+### Add stock to an existing product (admin only)
+POST {{baseUrl}}/api/v1/products/{{id}}/stock-additions
+Authorization: Bearer {{bearerToken}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "quantity": "<integer>",
+  "operationId": "<uuid>"
+}
+
+### List product categories
+GET {{baseUrl}}/api/v1/categories
+Authorization: Bearer {{bearerToken}}
+Accept: application/json
+
+### Place an order; prices come from the catalog and the customer from the token
+POST {{baseUrl}}/api/v1/orders
+Authorization: Bearer {{bearerToken}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "lines": null
+}
+
+### List orders newest first: a customer sees their own, an admin sees all (pageSize 1–50, default 20)
+GET {{baseUrl}}/api/v1/orders?status=<string>&page=1&pageSize=20
+Authorization: Bearer {{bearerToken}}
+Accept: application/json
+
+### Get an order with its lines and status history; someone else's order is 404
+GET {{baseUrl}}/api/v1/orders/{{id}}
+Authorization: Bearer {{bearerToken}}
+Accept: application/json
+
+### Move an order to its next status (Pending → Confirmed → Shipped → Delivered, or Pending/Confirmed → Cancelled)
+PATCH {{baseUrl}}/api/v1/orders/{{id}}/status
+Authorization: Bearer {{bearerToken}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "status": "<null>"
+}
+
+### List the latest order notifications for the signed-in customer.
+GET {{baseUrl}}/api/v1/notifications
+Authorization: Bearer {{bearerToken}}
+Accept: application/json
